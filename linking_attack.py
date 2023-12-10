@@ -34,6 +34,7 @@ print("There are",possible_matches,"possible matches to find")
 
 count = 0#keeps track of index of aux_dates_rep
 perfect_matches = 0
+half_chance_matches = 0
 for date in aux_dates_rep:
     date = str(date[:10])
     if(date in framed_crime['Date Rptd'].values):
@@ -46,6 +47,13 @@ for date in aux_dates_rep:
             print(aux_names[count],framed_crime['DATE OCC'][matches[0]],aux_dates_sent[count],framed_crime['Crm Cd Desc'][matches[0]],framed_crime['Weapon Desc'][matches[0]])
             print('\n\n')
             perfect_matches+=1
+        if(len(matches)==2):#we know thier info
+            print("We less \nlikely linked the name of this offender with thier crime")
+            #print(matches[0],framed_crime['Date Rptd'][matches[0]],date,framed_crime['Date Rptd'][matches[0]])
+            print(aux_names[count],framed_crime['DATE OCC'][matches[0]],aux_dates_sent[count],framed_crime['Crm Cd Desc'][matches[0]],framed_crime['Weapon Desc'][matches[0]])
+            print(aux_names[count],framed_crime['DATE OCC'][matches[1]],aux_dates_sent[count],framed_crime['Crm Cd Desc'][matches[1]],framed_crime['Weapon Desc'][matches[1]])
+            print('\n\n')
+            half_chance_matches+=1
         # else: #prints out all potential matches
         #     print("This offender likely committed at least one of these crimes, but we do not know which one")
         #     for i in range(len(framed_crime['Date Rptd'].values)):    
@@ -53,4 +61,5 @@ for date in aux_dates_rep:
         #             #print(i,framed_crime['Date Rptd'][i],date,framed_crime['Date Rptd'][i])
         #             print(aux_names[count],framed_crime['DATE OCC'][i],aux_dates_sent[count],framed_crime['Crm Cd Desc'][i])
     count+=1
-print('we were able to find',perfect_matches,'matches linked through the two datasets out of',possible_matches,'possible crimes after 2009.')
+print('we were able to find',perfect_matches,'matches linked through the two datasets out of',possible_matches,'possible crimes after 2009.',perfect_matches/possible_matches,'%')
+print('we were able to find',half_chance_matches,'matches linked through the two datasets out of',possible_matches,'possible crimes after 2009.',(perfect_matches+half_chance_matches)/possible_matches,'%')
