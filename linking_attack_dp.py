@@ -18,7 +18,7 @@ def slice_up_and_add_more_dp(x):
     noisy_day = int(laplace_mech(day,1,0.5))
     year = int(x[-4:])
     noisy_year = int(laplace_mech(year,1,0.5))
-    return x[:3]+str(noisy_day)+'/'+noisy_year
+    return x[:3]+str(noisy_day)+'/'+str(noisy_year)
 
 #applying this generalizing function of the days leads to 0 matches being found
 def slice_up_and_generalize_more(x):
