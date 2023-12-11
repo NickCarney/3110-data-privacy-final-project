@@ -9,7 +9,15 @@ def laplace_mech(v, sensitivity, epsilon):
 def slice_up_and_add_dp(x):
     x = str(x[:10])#make x only the date and not the time
     day = int(x[3:5])
-    noisy_day = int(laplace_mech(day,1,1))
+    noisy_day = int(laplace_mech(day,1,1.0))
+    return x[:3]+str(noisy_day)+x[5:]
+
+def slice_up_and_add_more_dp(x):
+    x = str(x[:10])#make x only the date and not the time
+    day = int(x[3:5])
+    noisy_day = int(laplace_mech(day,1,0.5))
+    year = int(x[-4:])
+    noisy_year = int(laplace_mech(year,1,0.5))
     return x[:3]+str(noisy_day)+x[5:]
 
 #applying this generalizing function of the days leads to 0 matches being found
@@ -29,8 +37,8 @@ def slice_up_and_generalize_less(x):
 
 framed_crime = pd.read_csv(os.path.dirname(__file__) + '/../Crime_Data_from_2010_to_2019.csv')#puts crime in a dataframe
 
-framed_crime['Date Rptd'] = framed_crime['Date Rptd'].apply(slice_up_and_add_dp)
-framed_crime['DATE OCC'] = framed_crime['DATE OCC'].apply(slice_up_and_add_dp)
+framed_crime['Date Rptd'] = framed_crime['Date Rptd'].apply(slice_up_and_add_more_dp)
+framed_crime['DATE OCC'] = framed_crime['DATE OCC'].apply(slice_up_and_add_more_dp)
 
 print(framed_crime)
 
@@ -47,9 +55,9 @@ for line in aux_file.readlines():
     aux_rep_date = split[4]
     aux_dates_rep.append(aux_rep_date)
     aux_date_sent = split[5]
-    aux_dates_sent.append(slice_up_and_add_dp(aux_date_sent))
+    aux_dates_sent.append(slice_up_and_add_more_dp(aux_date_sent))
     aux_occ_date = split[6]
-    aux_dates_occ.append(slice_up_and_add_dp(aux_occ_date))
+    aux_dates_occ.append(slice_up_and_add_more_dp(aux_occ_date))
     num_criminals+=1
 
 possible_matches = 0
