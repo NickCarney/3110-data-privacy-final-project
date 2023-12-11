@@ -5,6 +5,18 @@ import numpy as np
 def laplace_mech(v, sensitivity, epsilon):
     return v + np.random.laplace(loc=0, scale=sensitivity / epsilon)
 
+#checks to see if k anonymized
+def isKAnonymized(df, k):
+    for index, row in df.iterrows():
+        conditions = [f'`{col}` == "{row[col]}"' for col in df.columns]
+        query = ' & '.join(conditions)
+        rows = df.query(query)
+        if rows.shape[0] < k:
+            print(rows)
+            print(rows.shape[0])
+            return False
+    return True
+
 #applying this generalizing function of the days leads to 0 matches being found
 def slice_up_and_add_dp(x):
     x = str(x[:10])#make x only the date and not the time
@@ -37,10 +49,21 @@ def slice_up_and_generalize_less(x):
 
 framed_crime = pd.read_csv(os.path.dirname(__file__) + '/../Crime_Data_from_2010_to_2019.csv')#puts crime in a dataframe
 
-framed_crime['Date Rptd'] = framed_crime['Date Rptd'].apply(slice_up_and_add_more_dp)
-framed_crime['DATE OCC'] = framed_crime['DATE OCC'].apply(slice_up_and_add_more_dp)
+#uncomment to laplace each row with sequential composition
+# framed_crime['Date Rptd'] = framed_crime['Date Rptd'].apply(slice_up_and_generalize_more)
+# framed_crime['DATE OCC'] = framed_crime['DATE OCC'].apply(slice_up_and_generalize_more)
 
-print(framed_crime)
+
+#uncomment to generalize
+# framed_crime['Date Rptd'] = framed_crime['Date Rptd'].apply(slice_up_and_add_more_dp)
+# framed_crime['DATE OCC'] = framed_crime['DATE OCC'].apply(slice_up_and_add_more_dp)
+
+# uncomment to check k anonymization
+# selected_columns = ['Date Rptd', 'DATE OCC']
+# new_df = framed_crime[selected_columns]
+# print(isKAnonymized(new_df, 1))
+
+# print(framed_crime)
 
 aux_file = open('inmates.txt','r')
 aux_dates_occ = []
