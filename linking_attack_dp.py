@@ -1,15 +1,38 @@
 import pandas as pd
 import os.path
+import numpy as np
 
-def slice_up(x):
-    return str(x[:10])
+def laplace_mech(v, sensitivity, epsilon):
+    return v + np.random.laplace(loc=0, scale=sensitivity / epsilon)
+
+#applying this generalizing function of the days leads to 0 matches being found
+def slice_up_and_add_dp(x):
+    x = str(x[:10])#make x only the date and not the time
+    day = int(x[3:5])
+    noisy_day = int(laplace_mech(day,1,1))
+    return x[:3]+str(noisy_day)+x[5:]
+
+#applying this generalizing function of the days leads to 0 matches being found
+def slice_up_and_generalize_more(x):
+    x = str(x[:10])#make x only the date and not the time
+    day = int(int(x[3:5])/10)
+    x = x[:3]+str(int(day*10))+x[5:]
+    return x
+
+#applying this generalizing function of years leads to 0 matches being found
+def slice_up_and_generalize_less(x):
+    x = str(x[:10])#make x only the date and not the time
+    year = int(int(x[-4:])/10)
+    x = x[:-4]+str(int(year*10))
+    return x
+
 
 framed_crime = pd.read_csv(os.path.dirname(__file__) + '/../Crime_Data_from_2010_to_2019.csv')#puts crime in a dataframe
 
-framed_crime['Date Rptd'] = framed_crime['Date Rptd'].apply(slice_up)
-framed_crime['DATE OCC'] = framed_crime['DATE OCC'].apply(slice_up)
+framed_crime['Date Rptd'] = framed_crime['Date Rptd'].apply(slice_up_and_add_dp)
+framed_crime['DATE OCC'] = framed_crime['DATE OCC'].apply(slice_up_and_add_dp)
 
-#print(framed_crime)
+print(framed_crime)
 
 aux_file = open('inmates.txt','r')
 aux_dates_occ = []
@@ -17,15 +40,16 @@ aux_names = []
 aux_dates_rep = []
 aux_dates_sent = []
 num_criminals = 0
+aux_file.readline()
 for line in aux_file.readlines():
     split = line.split(',')
     aux_names.append(split[1]+' '+split[0])
     aux_rep_date = split[4]
     aux_dates_rep.append(aux_rep_date)
     aux_date_sent = split[5]
-    aux_dates_sent.append(aux_date_sent)
+    aux_dates_sent.append(slice_up_and_add_dp(aux_date_sent))
     aux_occ_date = split[6]
-    aux_dates_occ.append(aux_occ_date)
+    aux_dates_occ.append(slice_up_and_add_dp(aux_occ_date))
     num_criminals+=1
 
 possible_matches = 0
